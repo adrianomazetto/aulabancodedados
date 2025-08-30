@@ -404,12 +404,12 @@ GROUP BY categoria;`)}
                 practical: 'Execute todas as consultas no seu projeto Supabase. Crie 3 consultas adicionais próprias para explorar os dados.'
             },
             {
-                title: '7. Desafio Final - Relacionamentos',
+                title: '2. Criar Tabela de Categorias',
                 content: `
-                    <h4 class="text-lg font-semibold mb-3">Expandindo o Sistema:</h4>
-                    <p class="mb-4">Vamos criar uma tabela de categorias separada e estabelecer relacionamento com produtos.</p>
+                    <h4 class="text-lg font-semibold mb-3">Criando Sistema de Categorias:</h4>
+                    <p class="mb-4">Antes de estabelecer relacionamentos, precisamos criar a tabela de categorias.</p>
                     
-                    <h5 class="font-semibold mb-2">Passo 1: Criar tabela categorias</h5>
+                    <h5 class="font-semibold mb-2 mt-4">Passo 1: Criar tabela categorias</h5>
                     ${createCodeBlock(`CREATE TABLE categorias (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) UNIQUE NOT NULL,
@@ -425,7 +425,47 @@ GROUP BY categoria;`)}
 ('Doces', 'Doces e sobremesas'),
 ('Bebidas', 'Sucos e cafés');`)}
                     
-                    <h5 class="font-semibold mb-2 mt-4">Passo 3: Consulta com JOIN</h5>
+                    ${createInfoBox('Execute estes comandos na ordem apresentada. A tabela categorias deve existir antes de criarmos a chave estrangeira.', 'warning')}
+                `,
+                practical: 'Crie a tabela categorias e insira os dados no seu projeto Supabase.'
+            },
+            {
+                title: '3. Estabelecer Relacionamentos',
+                content: `
+                    <h4 class="text-lg font-semibold mb-3">Conectando Tabelas:</h4>
+                    <p class="mb-4">Agora vamos conectar a tabela produtos com categorias usando chave estrangeira.</p>
+                    
+                    <h5 class="font-semibold mb-2 mt-4">Passo 1: Adicionar coluna categoria_id</h5>
+                    ${createCodeBlock(`-- Adicionar a coluna categoria_id na tabela produtos
+ALTER TABLE produtos ADD COLUMN categoria_id UUID;`)}
+                    
+                    <h5 class="font-semibold mb-2 mt-4">Passo 2: Remover constraint NOT NULL</h5>
+                    ${createCodeBlock(`-- Remover a constraint NOT NULL da coluna categoria
+ALTER TABLE produtos ALTER COLUMN categoria DROP NOT NULL;`)}
+                    
+                    <h5 class="font-semibold mb-2 mt-4">Passo 3: Criar chave estrangeira</h5>
+                    ${createCodeBlock(`-- Adicionar a constraint de chave estrangeira
+ALTER TABLE produtos 
+ADD CONSTRAINT fk_produtos_categoria 
+FOREIGN KEY (categoria_id) REFERENCES categorias(id);`)}
+                    
+                    <h5 class="font-semibold mb-2 mt-4">Passo 4: Inserir produtos com categoria_id</h5>
+                    ${createCodeBlock(`-- Inserir produtos usando categoria_id
+INSERT INTO produtos (nome, preco, categoria_id, estoque) VALUES
+('Pão Francês', 0.50, (SELECT id FROM categorias WHERE nome = 'Pães'), 100),
+('Bolo de Chocolate', 25.00, (SELECT id FROM categorias WHERE nome = 'Bolos'), 5);`)}
+                    
+                    ${createInfoBox('EXECUTE NA ORDEM: Passo 1 → Passo 2 → Passo 3 → Passo 4. Cada passo deve ser executado separadamente!', 'warning')}
+                `,
+                practical: 'Execute cada passo na ordem exata: 1→2→3→4. Não pule nenhum passo!'
+            },
+            {
+                title: '4. Consultas com JOIN',
+                content: `
+                    <h4 class="text-lg font-semibold mb-3">Consultando Dados Relacionados:</h4>
+                    <p class="mb-4">Agora podemos fazer consultas que combinam dados das duas tabelas.</p>
+                    
+                    <h5 class="font-semibold mb-2 mt-4">Passo 1: JOIN básico</h5>
                     ${createCodeBlock(`SELECT 
     p.nome as produto,
     c.nome as categoria,
@@ -436,9 +476,14 @@ JOIN categorias c ON p.categoria_id = c.id
 WHERE p.ativo = true
 ORDER BY c.nome, p.nome;`)}
                     
+                    <h5 class="font-semibold mb-2 mt-4">Passo 2: Verificar dados</h5>
+                    ${createCodeBlock(`-- Verificar se as tabelas existem
+SELECT * FROM categorias;
+SELECT * FROM produtos WHERE categoria_id IS NOT NULL;`)}
+                    
                     ${createInfoBox('Este é um exemplo de normalização de dados - separamos as categorias em uma tabela própria para evitar redundância.', 'info')}
                 `,
-                practical: 'Implemente o sistema de categorias no seu projeto. Crie a tabela, insira os dados e teste a consulta com JOIN.'
+                practical: 'Teste a consulta JOIN no seu projeto. Verifique se os dados estão sendo retornados corretamente.'
             }
         ];
         
@@ -516,6 +561,19 @@ ORDER BY c.nome, p.nome;`)}
                     <h4 class="text-lg font-semibold mb-3">Criação via SQL Editor</h4>
                     <p class="mb-3">Para tabelas mais complexas, use o SQL Editor:</p>
                     
+                    <p class="mb-3"><strong>Passo 1: Criar tabela clientes (se não criada via Table Editor)</strong></p>
+                    ${createCodeBlock(`-- Criar tabela de clientes
+CREATE TABLE clientes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    telefone VARCHAR(20),
+    endereco TEXT,
+    ativo BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);`)}
+                    
+                    <p class="mb-3"><strong>Passo 2: Criar tabela pedidos</strong></p>
                     ${createCodeBlock(`-- Criar tabela de pedidos
 CREATE TABLE pedidos (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -539,26 +597,45 @@ CREATE TABLE pedidos (
                 content: `
                     ${createInfoBox('Row Level Security é um sistema que controla quais registros cada usuário pode acessar, baseado em políticas de segurança. É essencial para proteger dados sensíveis.', 'warning')}
                     
-                    <h4 class="text-lg font-semibold mb-3">Habilitando RLS</h4>
-                    ${createCodeBlock(`-- Habilitar RLS em todas as tabelas
+                    <h4 class="text-lg font-semibold mb-3">⚠️ Configuração para Frontend Demo</h4>
+                    <p class="mb-3"><strong>Para usar o Frontend Demo sem erros de RLS, escolha uma das opções:</strong></p>
+                    
+                    <h5 class="font-semibold mb-2 mt-4">Opção 1: Desabilitar RLS temporariamente (Recomendado para testes)</h5>
+                    ${createCodeBlock(`-- Desabilitar RLS nas tabelas para permitir operações do frontend
+ALTER TABLE clientes DISABLE ROW LEVEL SECURITY;
+ALTER TABLE pedidos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE produtos DISABLE ROW LEVEL SECURITY;`)}
+                    
+                    <h5 class="font-semibold mb-2 mt-4">Opção 2: Criar políticas permissivas</h5>
+                    ${createCodeBlock(`-- Habilitar RLS nas tabelas
 ALTER TABLE clientes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pedidos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE produtos ENABLE ROW LEVEL SECURITY;
-ALTER TABLE pedidos ENABLE ROW LEVEL SECURITY;`)}
+
+-- Criar políticas que permitem todas as operações
+CREATE POLICY "Permitir todas operações clientes" ON clientes
+    FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Permitir todas operações pedidos" ON pedidos
+    FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Permitir todas operações produtos" ON produtos
+    FOR ALL USING (true) WITH CHECK (true);`)}
                     
-                    <h4 class="text-lg font-semibold mb-3">Criando Políticas</h4>
-                    <p class="mb-3">Exemplo: Clientes podem ver apenas seus próprios dados</p>
+                    <h4 class="text-lg font-semibold mb-3">Políticas de Segurança Avançadas (Opcional)</h4>
+                    <p class="mb-3">Para um ambiente de produção, use políticas mais restritivas:</p>
                     
-                    ${createCodeBlock(`-- Política para clientes verem apenas seus próprios dados
-CREATE POLICY "Clientes podem ver próprios dados" ON clientes
-    FOR SELECT USING (auth.uid() = id);
+                    ${createCodeBlock(`-- Exemplo: Política mais segura para clientes autenticados
+CREATE POLICY "Clientes autenticados" ON clientes
+    FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Produtos visíveis para todos
-CREATE POLICY "Produtos visíveis para todos" ON produtos
-    FOR SELECT USING (disponivel = true);`)}
+CREATE POLICY "Produtos públicos" ON produtos
+    FOR SELECT USING (ativo = true);`)}
                     
-                    ${createInfoBox('Benefícios do RLS: Segurança automática na API, isolamento de dados por usuário, controle granular de acesso, proteção contra vazamentos de dados.', 'success')}
+                    ${createInfoBox('💡 Dica: Use a Opção 1 (desabilitar RLS) para testar o frontend demo. Em produção, implemente políticas adequadas de segurança.', 'success')}
                 `,
-                practical: 'Habilite RLS nas suas tabelas e crie políticas básicas de segurança.'
+                practical: 'Execute a Opção 1 para desabilitar RLS e testar o frontend demo sem erros.'
             },
             {
                 title: '5. Projeto Prático - Dados da Lanchonete',
@@ -572,24 +649,43 @@ INSERT INTO clientes (nome, email, telefone, endereco) VALUES
 ('Maria Santos', 'maria@email.com', '11888888888', 'Rua B, 456'),
 ('Pedro Costa', 'pedro@email.com', '11777777777', 'Rua C, 789');
 
--- Inserir produtos do cardápio
-INSERT INTO produtos (nome, categoria, preco, descricao, tempo_preparo) VALUES
-('X-Burger', 'Lanches', 15.90, 'Hambúrguer, queijo, alface, tomate', 20),
-('X-Bacon', 'Lanches', 18.90, 'Hambúrguer, bacon, queijo, alface, tomate', 22),
-('Coca-Cola', 'Bebidas', 5.50, 'Refrigerante 350ml', 2),
-('Batata Frita', 'Porções', 12.90, 'Batata frita crocante', 15);`)}
+-- Inserir produtos do cardápio (usando colunas da tabela produtos da Aula 1)
+INSERT INTO produtos (nome, categoria, preco, descricao) VALUES
+('X-Burger', 'Lanches', 15.90, 'Hambúrguer, queijo, alface, tomate'),
+('X-Bacon', 'Lanches', 18.90, 'Hambúrguer, bacon, queijo, alface, tomate'),
+('Coca-Cola', 'Bebidas', 5.50, 'Refrigerante 350ml'),
+('Batata Frita', 'Porções', 12.90, 'Batata frita crocante');`)}
                     
                     <h4 class="text-lg font-semibold mb-3">Consultas Essenciais</h4>
                     ${createCodeBlock(`-- Cardápio completo por categoria
-SELECT categoria, nome, descricao, preco, tempo_preparo
+SELECT categoria, nome, descricao, preco
 FROM produtos 
-WHERE disponivel = true 
+WHERE ativo = true 
 ORDER BY categoria, preco;
 
--- Pedidos do cliente
+-- Consultar pedidos de um cliente específico
+-- Método 1: Usando subquery para pegar o primeiro cliente
 SELECT p.id, p.data_pedido, p.status, p.total
 FROM pedidos p
-WHERE p.cliente_id = '[ID_DO_CLIENTE]'
+WHERE p.cliente_id = (SELECT id FROM clientes LIMIT 1)
+ORDER BY p.data_pedido DESC;
+
+-- Método 2: JOIN para ver todos os pedidos com nomes dos clientes
+SELECT 
+    c.nome as cliente,
+    p.id as pedido_id,
+    p.data_pedido,
+    p.status,
+    p.total
+FROM pedidos p
+JOIN clientes c ON p.cliente_id = c.id
+ORDER BY p.data_pedido DESC;
+
+-- Método 3: Para consultar pedidos de um cliente específico pelo nome
+SELECT p.id, p.data_pedido, p.status, p.total
+FROM pedidos p
+JOIN clientes c ON p.cliente_id = c.id
+WHERE c.nome = 'João Silva'
 ORDER BY p.data_pedido DESC;`)}
                 `,
                 practical: 'Insira os dados de exemplo no seu projeto e execute as consultas para verificar os resultados.'
@@ -1118,16 +1214,17 @@ BEGIN
     RETURN QUERY
     SELECT 
         p.nome,
-        p.categoria,
+        c.nome as categoria,
         SUM(iv.quantidade)::BIGINT,
         SUM(iv.subtotal),
         AVG(iv.preco_unitario)
     FROM itens_venda iv
     JOIN produtos p ON iv.produto_id = p.id
+    JOIN categorias c ON p.categoria_id = c.id
     JOIN vendas v ON iv.venda_id = v.id
     WHERE v.data_venda::DATE BETWEEN data_inicio AND data_fim
         AND v.status = 'concluida'
-    GROUP BY p.id, p.nome, p.categoria
+    GROUP BY p.id, p.nome, c.nome
     ORDER BY SUM(iv.subtotal) DESC;
 END;
 $$ LANGUAGE plpgsql;

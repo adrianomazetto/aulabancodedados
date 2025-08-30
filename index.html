@@ -277,10 +277,72 @@
         </section>
 
         <!-- Lesson Sections (will be populated by JavaScript) -->
-        <section id="aula1" class="section hidden"></section>
-        <section id="aula2" class="section hidden"></section>
-        <section id="aula3" class="section hidden"></section>
-        <section id="aula4" class="section hidden"></section>
+        <section id="aula1" class="section hidden">
+            <!-- Content will be populated by JavaScript -->
+        </section>
+        
+        <section id="aula2" class="section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Aula 2: Configuração do Supabase</h2>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-blue-600">6. Integração com Frontend</h3>
+                        <p class="mb-4">Para integrar com uma aplicação frontend, você pode usar a biblioteca JavaScript do Supabase:</p>
+                        <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                            <pre><code class="language-javascript">// Instalar: npm install @supabase/supabase-js
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = 'YOUR_SUPABASE_URL'
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+// Exemplo: Buscar todos os clientes
+async function buscarClientes() {
+  const { data, error } = await supabase
+    .from('clientes')
+    .select('*')
+  
+  if (error) console.error('Erro:', error)
+  else console.log('Clientes:', data)
+}
+
+// Exemplo: Criar um novo pedido
+async function criarPedido(clienteId, total) {
+  const { data, error } = await supabase
+    .from('pedidos')
+    .insert({
+      cliente_id: clienteId,
+      total: total,
+      status: 'pendente',
+      data_pedido: new Date().toISOString()
+    })
+  
+  if (error) console.error('Erro:', error)
+  else console.log('Pedido criado:', data)
+}</code></pre>
+                        </div>
+                        
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                            <h4 class="font-semibold text-green-800 mb-2">🚀 Demo Prático Disponível</h4>
+                            <p class="text-green-700 mb-3">Criamos uma demonstração completa de frontend integrado com Supabase que você pode testar agora mesmo!</p>
+                            <a href="frontend-demo.html" target="_blank" class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors">
+                                🔗 Abrir Demo do Frontend
+                            </a>
+                            <p class="text-sm text-green-600 mt-2">A demo inclui: cadastro de clientes, listagem de produtos, criação de pedidos e integração real com Supabase.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="aula3" class="section hidden">
+            <!-- Content will be populated by JavaScript -->
+        </section>
+        
+        <section id="aula4" class="section hidden">
+            <!-- Content will be populated by JavaScript -->
+        </section>
     </main>
 
     <!-- Footer -->

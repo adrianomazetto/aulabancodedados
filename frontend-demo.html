@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Lanchonete - Demo Frontend</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .config-form {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .produto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+        }
+
+        .produto-info h4 {
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .produto-info p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .produto-preco {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .status {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d7ff;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .config-form {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍔 Sistema Lanchonete</h1>
+            <p>Demonstração de Integração Frontend com Supabase</p>
+        </div>
+
+        <div class="config-section">
+            <h3 style="margin-bottom: 15px; color: #495057;">⚙️ Configuração do Supabase</h3>
+            <div class="config-form">
+                <div class="form-group">
+                    <label for="supabaseUrl">URL do Projeto</label>
+                    <input type="text" id="supabaseUrl" placeholder="https://seu-projeto.supabase.co">
+                </div>
+                <div class="form-group">
+                    <label for="supabaseKey">Chave Anônima</label>
+                    <input type="text" id="supabaseKey" placeholder="sua-chave-anonima">
+                </div>
+                <button class="btn btn-primary" onclick="conectarSupabase()">Conectar</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="status" class="status info">
+                ℹ️ Configure as credenciais do Supabase acima para começar
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="mostrarTab('produtos')">📋 Produtos</div>
+                <div class="tab" onclick="mostrarTab('clientes')">👥 Clientes</div>
+                <div class="tab" onclick="mostrarTab('pedidos')">🛒 Pedidos</div>
+                <div class="tab" onclick="mostrarTab('novo-pedido')">➕ Novo Pedido</div>
+            </div>
+
+            <div id="produtos" class="tab-content active">
+                <div class="card">
+                    <h3>🍕 Cardápio</h3>
+                    <button class="btn btn-primary" onclick="carregarProdutos()">Carregar Produtos</button>
+                    <div id="lista-produtos" class="loading">Clique em "Carregar Produtos" para ver o cardápio</div>
+                </div>
+            </div>
+
+            <div id="clientes" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3>👤 Cadastrar Cliente</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clienteNome">Nome</label>
+                                <input type="text" id="clienteNome" placeholder="Nome completo">
+                            </div>
+                            <div class="form-group">
+                                <label for="clienteEmail">Email</label>
+                                <input type="email" id="clienteEmail" placeholder="email@exemplo.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clienteTelefone">Telefone</label>
+                                <input type="text" id="clienteTelefone" placeholder="(11) 99999-9999">
+                            </div>
+                            <div class="form-group">
+                                <label for="clienteEndereco">Endereço</label>
+                                <input type="text" id="clienteEndereco" placeholder="Rua, número, bairro">
+                            </div>
+                        </div>
+                        <button class="btn btn-success" onclick="cadastrarCliente()">Cadastrar Cliente</button>
+                    </div>
+                    <div class="card">
+                        <h3>📋 Lista de Clientes</h3>
+                        <button class="btn btn-primary" onclick="carregarClientes()">Carregar Clientes</button>
+                        <div id="lista-clientes" class="loading">Clique em "Carregar Clientes" para ver a lista</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pedidos" class="tab-content">
+                <div class="card">
+                    <h3>📦 Histórico de Pedidos</h3>
+                    <button class="btn btn-primary" onclick="carregarPedidos()">Carregar Pedidos</button>
+                    <div id="lista-pedidos" class="loading">Clique em "Carregar Pedidos" para ver o histórico</div>
+                </div>
+            </div>
+
+            <div id="novo-pedido" class="tab-content">
+                <div class="card">
+                    <h3>🛒 Criar Novo Pedido</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pedidoCliente">Cliente</label>
+                            <select id="pedidoCliente">
+                                <option value="">Selecione um cliente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pedidoObservacoes">Observações</label>
+                            <input type="text" id="pedidoObservacoes" placeholder="Observações do pedido">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pedidoTotal">Total (R$)</label>
+                            <input type="number" id="pedidoTotal" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="pedidoStatus">Status</label>
+                            <select id="pedidoStatus">
+                                <option value="pendente">Pendente</option>
+                                <option value="preparando">Preparando</option>
+                                <option value="pronto">Pronto</option>
+                                <option value="entregue">Entregue</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="criarPedido()">Criar Pedido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biblioteca do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Variável global para o cliente Supabase
+        let supabase = null;
+
+        // Função para conectar ao Supabase
+        async function conectarSupabase() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+            
+            if (!url || !key) {
+                mostrarStatus('Preencha a URL e a chave do Supabase', 'error');
+                return;
+            }
+
+            try {
+                // Criar cliente Supabase real
+                const { createClient } = window.supabase;
+                supabase = createClient(url, key);
+                
+                // Testar conexão fazendo uma consulta simples
+                const { data, error } = await supabase.from('clientes').select('count', { count: 'exact', head: true });
+                
+                if (error) {
+                    throw new Error(`Erro de conexão: ${error.message}`);
+                }
+                
+                mostrarStatus('✅ Conectado ao Supabase com sucesso!', 'success');
+                
+                // Carregar clientes no select
+                carregarClientesSelect();
+                
+            } catch (error) {
+                mostrarStatus('❌ Erro ao conectar: ' + error.message, 'error');
+                console.error('Erro detalhado:', error);
+                
+                // Fallback para modo de demonstração
+                mostrarStatus('⚠️ Usando modo demonstração com dados simulados', 'info');
+                iniciarModoDemo();
+            }
+        }
+        
+        // Função para iniciar modo de demonstração
+        function iniciarModoDemo() {
+            supabase = {
+                from: (table) => ({
+                    select: (columns = '*') => {
+                        const query = {
+                            _table: table,
+                            _columns: columns,
+                            _filters: {},
+                            _order: null,
+                            
+                            eq: function(column, value) {
+                                this._filters[column] = value;
+                                return this;
+                            },
+                            
+                            order: function(column, options = {}) {
+                                this._order = { column, ascending: options.ascending !== false };
+                                return this;
+                            },
+                            
+                            then: function(callback) {
+                                const dados = gerarDadosExemplo(this._table, this._columns, this._filters, this._order);
+                                setTimeout(() => callback({ data: dados, error: null }), 500);
+                                return this;
+                            }
+                        };
+                        return query;
+                    },
+                    insert: (data) => ({
+                        select: () => ({
+                            then: (callback) => {
+                                mostrarStatus(`✅ ${table} inserido com sucesso! (modo demo)`, 'success');
+                                setTimeout(() => callback({ data: [{ ...data, id: gerarId() }], error: null }), 500);
+                            }
+                        })
+                    })
+                })
+            };
+            
+            carregarClientesSelect();
+        }
+
+        // Função para gerar dados de exemplo
+        function gerarDadosExemplo(table, columns, filters = {}, order = null) {
+            const dados = {
+                produtos: [
+                    { id: '1', nome: 'X-Burger', categoria: 'Lanches', preco: 15.90, descricao: 'Hambúrguer, queijo, alface, tomate', ativo: true },
+                    { id: '2', nome: 'X-Bacon', categoria: 'Lanches', preco: 18.90, descricao: 'Hambúrguer, bacon, queijo, alface, tomate', ativo: true },
+                    { id: '3', nome: 'Coca-Cola', categoria: 'Bebidas', preco: 5.50, descricao: 'Refrigerante 350ml', ativo: true },
+                    { id: '4', nome: 'Batata Frita', categoria: 'Porções', preco: 12.90, descricao: 'Batata frita crocante', ativo: true }
+                ],
+                clientes: [
+                    { id: '1', nome: 'João Silva', email: 'joao@email.com', telefone: '11999999999', endereco: 'Rua A, 123', ativo: true },
+                    { id: '2', nome: 'Maria Santos', email: 'maria@email.com', telefone: '11888888888', endereco: 'Rua B, 456', ativo: true },
+                    { id: '3', nome: 'Pedro Costa', email: 'pedro@email.com', telefone: '11777777777', endereco: 'Rua C, 789', ativo: true }
+                ],
+                pedidos: [
+                    { id: '1', cliente_id: '1', data_pedido: '2024-01-15T10:30:00', status: 'entregue', total: 34.80, observacoes: 'Sem cebola', clientes: { nome: 'João Silva' } },
+                    { id: '2', cliente_id: '2', data_pedido: '2024-01-15T11:15:00', status: 'preparando', total: 18.90, observacoes: 'Extra bacon', clientes: { nome: 'Maria Santos' } },
+                    { id: '3', cliente_id: '1', data_pedido: '2024-01-15T12:00:00', status: 'pronto', total: 23.40, observacoes: '', clientes: { nome: 'João Silva' } }
+                ]
+            };
+            
+            let resultado = dados[table] || [];
+            
+            // Aplicar filtros
+            Object.keys(filters).forEach(column => {
+                const value = filters[column];
+                resultado = resultado.filter(item => item[column] == value);
+            });
+            
+            // Aplicar ordenação
+            if (order) {
+                resultado.sort((a, b) => {
+                    const aVal = a[order.column];
+                    const bVal = b[order.column];
+                    if (order.ascending) {
+                        return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+                    } else {
+                        return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+                    }
+                });
+            }
+            
+            return resultado;
+        }
+
+        // Função para gerar ID único
+        function gerarId() {
+            return Math.random().toString(36).substr(2, 9);
+        }
+
+        // Função para mostrar status
+        function mostrarStatus(mensagem, tipo) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = mensagem;
+            statusDiv.className = `status ${tipo}`;
+        }
+
+        // Função para mostrar tabs
+        function mostrarTab(tabId) {
+            // Remover classe active de todas as tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Encontrar e ativar a tab correspondente
+            const tabButton = document.querySelector(`[onclick="mostrarTab('${tabId}')"]`);
+            if (tabButton) {
+                tabButton.classList.add('active');
+            }
+            
+            // Ativar o conteúdo da tab
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Função para carregar produtos
+        async function carregarProdutos() {
+            if (!supabase) {
+                mostrarStatus('❌ Conecte-se ao Supabase primeiro', 'error');
+                return;
+            }
+
+            const listaProdutos = document.getElementById('lista-produtos');
+            listaProdutos.innerHTML = '<div class="loading">Carregando produtos...</div>';
+
+            try {
+                // Usar API real do Supabase
+                const { data, error } = await supabase
+                    .from('produtos')
+                    .select('*')
+                    .eq('ativo', true)
+                    .order('categoria', { ascending: true });
+                
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    listaProdutos.innerHTML = '<p>Nenhum produto encontrado. Certifique-se de que a tabela "produtos" existe e possui dados.</p>';
+                    return;
+                }
+
+                let html = '';
+                data.forEach(produto => {
+                    html += `
+                        <div class="produto-item">
+                            <div class="produto-info">
+                                <h4>${produto.nome}</h4>
+                                <p><strong>Categoria:</strong> ${produto.categoria}</p>
+                                <p>${produto.descricao || 'Sem descrição'}</p>
+                            </div>
+                            <div class="produto-preco">R$ ${parseFloat(produto.preco).toFixed(2)}</div>
+                        </div>
+                    `;
+                });
+                
+                listaProdutos.innerHTML = html;
+                mostrarStatus(`✅ ${data.length} produtos carregados com sucesso!`, 'success');
+                
+            } catch (error) {
+                mostrarStatus('❌ Erro ao carregar produtos: ' + error.message, 'error');
+                listaProdutos.innerHTML = '<p>Erro ao carregar produtos. Verifique se a tabela existe no Supabase.</p>';
+                console.error('Erro detalhado:', error);
+            }
+        }
+
+        // Função para carregar clientes
+        async function carregarClientes() {
+            if (!supabase) {
+                mostrarStatus('❌ Conecte-se ao Supabase primeiro', 'error');
+                return;
+            }
+
+            const listaClientes = document.getElementById('lista-clientes');
+            listaClientes.innerHTML = '<div class="loading">Carregando clientes...</div>';
+
+            try {
+                // Usar API real do Supabase
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .select('*')
+                    .eq('ativo', true)
+                    .order('nome', { ascending: true });
+                
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    listaClientes.innerHTML = '<p>Nenhum cliente encontrado. Certifique-se de que a tabela "clientes" existe e possui dados.</p>';
+                    return;
+                }
+
+                let html = '';
+                data.forEach(cliente => {
+                    html += `
+                        <div class="produto-item">
+                            <div class="produto-info">
+                                <h4>${cliente.nome}</h4>
+                                <p><strong>Email:</strong> ${cliente.email}</p>
+                                <p><strong>Telefone:</strong> ${cliente.telefone || 'Não informado'}</p>
+                                <p><strong>Endereço:</strong> ${cliente.endereco || 'Não informado'}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                listaClientes.innerHTML = html;
+                mostrarStatus(`✅ ${data.length} clientes carregados com sucesso!`, 'success');
+                
+            } catch (error) {
+                mostrarStatus('❌ Erro ao carregar clientes: ' + error.message, 'error');
+                listaClientes.innerHTML = '<p>Erro ao carregar clientes. Verifique se a tabela existe no Supabase.</p>';
+                console.error('Erro detalhado:', error);
+            }
+        }
+
+        // Função para carregar clientes no select
+        async function carregarClientesSelect() {
+            if (!supabase) return;
+
+            try {
+                // Usar API real do Supabase
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .select('id, nome')
+                    .eq('ativo', true)
+                    .order('nome', { ascending: true });
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('pedidoCliente');
+                select.innerHTML = '<option value="">Selecione um cliente</option>';
+                
+                if (data && data.length > 0) {
+                    data.forEach(cliente => {
+                        select.innerHTML += `<option value="${cliente.id}">${cliente.nome}</option>`;
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Erro ao carregar clientes para select:', error);
+            }
+        }
+
+        // Função para cadastrar cliente
+        async function cadastrarCliente() {
+            if (!supabase) {
+                mostrarStatus('❌ Conecte-se ao Supabase primeiro', 'error');
+                return;
+            }
+
+            const nome = document.getElementById('clienteNome').value.trim();
+            const email = document.getElementById('clienteEmail').value.trim();
+            const telefone = document.getElementById('clienteTelefone').value.trim();
+            const endereco = document.getElementById('clienteEndereco').value.trim();
+
+            if (!nome || !email) {
+                mostrarStatus('❌ Nome e email são obrigatórios', 'error');
+                return;
+            }
+
+            // Validação básica de email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                mostrarStatus('❌ Email inválido', 'error');
+                return;
+            }
+
+            try {
+                const novoCliente = { 
+                    nome, 
+                    email, 
+                    telefone: telefone || null, 
+                    endereco: endereco || null, 
+                    ativo: true 
+                };
+                
+                // Usar API real do Supabase
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .insert(novoCliente)
+                    .select();
+                
+                if (error) {
+                    if (error.code === '23505') {
+                        throw new Error('Este email já está cadastrado');
+                    }
+                    throw error;
+                }
+                
+                mostrarStatus(`✅ Cliente ${nome} cadastrado com sucesso!`, 'success');
+                
+                // Limpar formulário
+                document.getElementById('clienteNome').value = '';
+                document.getElementById('clienteEmail').value = '';
+                document.getElementById('clienteTelefone').value = '';
+                document.getElementById('clienteEndereco').value = '';
+                
+                // Recarregar lista de clientes
+                carregarClientes();
+                carregarClientesSelect();
+                
+            } catch (error) {
+                mostrarStatus('❌ Erro ao cadastrar cliente: ' + error.message, 'error');
+                console.error('Erro detalhado:', error);
+            }
+        }
+
+        // Função para carregar pedidos
+        async function carregarPedidos() {
+            if (!supabase) {
+                mostrarStatus('❌ Conecte-se ao Supabase primeiro', 'error');
+                return;
+            }
+
+            const listaPedidos = document.getElementById('lista-pedidos');
+            listaPedidos.innerHTML = '<div class="loading">Carregando pedidos...</div>';
+
+            try {
+                // Usar API real do Supabase com JOIN para pegar nome do cliente
+                const { data, error } = await supabase
+                    .from('pedidos')
+                    .select(`
+                        *,
+                        clientes (nome)
+                    `)
+                    .order('data_pedido', { ascending: false });
+                
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    listaPedidos.innerHTML = '<p>Nenhum pedido encontrado. Certifique-se de que a tabela "pedidos" existe e possui dados.</p>';
+                    return;
+                }
+
+                let html = '';
+                data.forEach(pedido => {
+                    const statusColor = {
+                        'pendente': '#ffc107',
+                        'preparando': '#17a2b8',
+                        'pronto': '#28a745',
+                        'entregue': '#6c757d',
+                        'cancelado': '#dc3545'
+                    };
+                    
+                    const nomeCliente = pedido.clientes ? pedido.clientes.nome : 'Cliente não encontrado';
+                    
+                    html += `
+                        <div class="produto-item">
+                            <div class="produto-info">
+                                <h4>Pedido #${pedido.id.substring(0, 8)}</h4>
+                                <p><strong>Cliente:</strong> ${nomeCliente}</p>
+                                <p><strong>Data:</strong> ${new Date(pedido.data_pedido).toLocaleString('pt-BR')}</p>
+                                <p><strong>Status:</strong> <span style="color: ${statusColor[pedido.status] || '#6c757d'}; font-weight: bold;">${pedido.status.toUpperCase()}</span></p>
+                                ${pedido.observacoes ? `<p><strong>Obs:</strong> ${pedido.observacoes}</p>` : ''}
+                            </div>
+                            <div class="produto-preco">R$ ${parseFloat(pedido.total).toFixed(2)}</div>
+                        </div>
+                    `;
+                });
+                
+                listaPedidos.innerHTML = html;
+                mostrarStatus(`✅ ${data.length} pedidos carregados com sucesso!`, 'success');
+                
+            } catch (error) {
+                mostrarStatus('❌ Erro ao carregar pedidos: ' + error.message, 'error');
+                listaPedidos.innerHTML = '<p>Erro ao carregar pedidos. Verifique se a tabela existe no Supabase.</p>';
+                console.error('Erro detalhado:', error);
+            }
+        }
+
+        // Função para criar pedido
+        async function criarPedido() {
+            if (!supabase) {
+                mostrarStatus('❌ Conecte-se ao Supabase primeiro', 'error');
+                return;
+            }
+
+            const cliente_id = document.getElementById('pedidoCliente').value;
+            const observacoes = document.getElementById('pedidoObservacoes').value.trim();
+            const total = parseFloat(document.getElementById('pedidoTotal').value);
+            const status = document.getElementById('pedidoStatus').value;
+
+            if (!cliente_id) {
+                mostrarStatus('❌ Selecione um cliente', 'error');
+                return;
+            }
+
+            if (!total || total <= 0) {
+                mostrarStatus('❌ Informe um valor válido maior que zero', 'error');
+                return;
+            }
+
+            try {
+                const novoPedido = {
+                    cliente_id,
+                    observacoes: observacoes || null,
+                    total,
+                    status,
+                    data_pedido: new Date().toISOString()
+                };
+                
+                // Usar API real do Supabase
+                const { data, error } = await supabase
+                    .from('pedidos')
+                    .insert(novoPedido)
+                    .select();
+                
+                if (error) throw error;
+                
+                mostrarStatus(`✅ Pedido criado com sucesso! Total: R$ ${total.toFixed(2)}`, 'success');
+                
+                // Limpar formulário
+                document.getElementById('pedidoCliente').value = '';
+                document.getElementById('pedidoObservacoes').value = '';
+                document.getElementById('pedidoTotal').value = '';
+                document.getElementById('pedidoStatus').value = 'pendente';
+                
+                // Mostrar tab de pedidos
+                mostrarTab('pedidos');
+                
+                // Recarregar lista de pedidos
+                carregarPedidos();
+                
+            } catch (error) {
+                mostrarStatus('❌ Erro ao criar pedido: ' + error.message, 'error');
+                console.error('Erro detalhado:', error);
+            }
+        }
+
+        // Adicionar estilos para o select
+        document.addEventListener('DOMContentLoaded', function() {
+            const style = document.createElement('style');
+            style.textContent = `
+                select {
+                    width: 100%;
+                    padding: 10px;
+                    border: 2px solid #dee2e6;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    background: white;
+                    transition: border-color 0.3s;
+                }
+                
+                select:focus {
+                    outline: none;
+                    border-color: #667eea;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
